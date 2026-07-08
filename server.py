@@ -437,7 +437,7 @@ class AdalinaServer(SimpleHTTPRequestHandler):
         print(f'[Server] {format % args}')
 
 def main():
-    PORT = 3000
+    PORT = int(os.environ.get("PORT", 3000))
 
     init_database()
 
@@ -458,7 +458,7 @@ def main():
     print(f'{"="*50}')
     print(f'Press Ctrl+C to stop the server.')
 
-    server = HTTPServer(("", PORT), AdalinaServer)
+    server = HTTPServer(("0.0.0.0", PORT), AdalinaServer)
     try:
         print(f'✓ Server started and running on port {PORT}')
         server.serve_forever()
