@@ -3,9 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings - LUNA BELLE Admin</title>
+    <title>Settings - ADALINA Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="css/admin.css">
+    <style>
+        .settings-tabs { display:flex; gap:0; border-bottom:1px solid var(--border); margin-bottom:24px; overflow-x:auto; }
+        .settings-tab { padding:10px 18px; font-size:0.82rem; font-weight:500; background:none; border:none; border-bottom:2px solid transparent; cursor:pointer; color:var(--text-muted); white-space:nowrap; transition:all 0.2s; }
+        .settings-tab:hover { color:var(--text-dark); }
+        .settings-tab.active { color:var(--primary); border-bottom-color:var(--primary); }
+        .settings-tab i { margin-right:6px; font-size:0.8rem; }
+        .tab-pane { display:none; }
+        .tab-pane.active { display:block; }
+        .settings-card { margin-bottom:20px; }
+        .settings-card .card-header { display:flex; align-items:center; justify-content:space-between; }
+        .img-upload-wrapper { display:flex; align-items:center; gap:14px; }
+        .img-upload-wrapper .preview { width:64px; height:64px; border-radius:6px; object-fit:cover; border:1px solid var(--border); background:var(--content-bg); }
+        .img-upload-wrapper .preview-sm { width:40px; height:40px; }
+        .img-upload-wrapper .upload-actions { display:flex; flex-direction:column; gap:4px; }
+        .img-upload-wrapper .upload-actions .file-label { font-size:0.78rem; color:var(--primary); cursor:pointer; font-weight:500; }
+        .img-upload-wrapper .upload-actions .file-label:hover { text-decoration:underline; }
+        .img-upload-wrapper .upload-actions .file-name { font-size:0.72rem; color:var(--text-muted); }
+        .img-upload-wrapper input[type="file"] { display:none; }
+        .color-preview { width:28px; height:28px; border-radius:50%; border:1px solid var(--border); flex-shrink:0; }
+        .color-input-row { display:flex; align-items:center; gap:8px; }
+        .color-input-row input[type="color"] { width:36px; height:36px; border:none; padding:0; cursor:pointer; border-radius:4px; background:none; }
+        .color-input-row input[type="text"] { flex:1; }
+        .font-select-row { display:flex; gap:12px; flex-wrap:wrap; }
+        .font-select-row .form-group { flex:1; min-width:160px; }
+        .save-bar { position:sticky; bottom:0; background:var(--card-bg); border-top:1px solid var(--border); padding:12px 0; margin-top:24px; display:flex; align-items:center; justify-content:flex-end; gap:12px; }
+        .save-bar .save-msg { font-size:0.8rem; color:var(--success); transition:opacity 0.3s; }
+        .save-bar .save-msg.error { color:var(--danger); }
+        .save-bar .save-msg.hidden { opacity:0; }
+        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+        @media (max-width:768px) { .form-row { grid-template-columns:1fr; } }
+        .field-hint { font-size:0.72rem; color:var(--text-muted); margin-top:2px; }
+        .currency-lock { display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:var(--content-bg); border-radius:6px; font-size:0.85rem; color:var(--text-muted); }
+        .currency-lock i { font-size:0.75rem; color:var(--primary); }
+        .settings-card .card-body .form-group { margin-bottom:14px; }
+    </style>
     <script>
     fetch('/api/public/settings').then(function(r){return r.json()}).then(function(s){
         if (s.primary_color) document.documentElement.style.setProperty('--primary', s.primary_color);
@@ -23,10 +58,8 @@
             if (parts.length > 1) { brandEl.innerHTML = parts.slice(0, -1).join(' ') + ' <span>' + parts[parts.length - 1] + '</span>'; }
             else { brandEl.textContent = s.store_name; }
         }
-        var loginBrand = document.querySelector('.brand h2');
-        if (loginBrand && s.store_name) loginBrand.textContent = s.store_name;
         if (s.logo_header) {
-            document.querySelectorAll('.sidebar-brand img, .brand img').forEach(function(img) { img.src = s.logo_header; });
+            document.querySelectorAll('.sidebar-brand img, .brand img').forEach(function(img) { img.src = '/' + s.logo_header; });
         }
         var titleEl = document.querySelector('title');
         if (titleEl && s.site_title) {
@@ -43,8 +76,8 @@
 
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-        <img src="../images/logo.svg" alt="LUNA BELLE" style="width:32px;height:32px">
-        <h2>LUNA <span>BELLE</span></h2>
+        <img src="../images/logo.svg" alt="ADALINA" style="width:32px;height:32px">
+        <h2>ADALINA</h2>
     </div>
     <nav class="sidebar-nav">
         <div class="nav-label">Main</div>
@@ -52,16 +85,13 @@
         <a href="products.html"><i class="fas fa-box"></i> Products</a>
         <a href="categories.html"><i class="fas fa-tags"></i> Categories</a>
         <a href="collections.html"><i class="fas fa-layer-group"></i> Collections</a>
-
         <div class="nav-label">Sales</div>
         <a href="orders.html"><i class="fas fa-shopping-cart"></i> Orders</a>
         <a href="customers.html"><i class="fas fa-users"></i> Customers</a>
-
         <div class="nav-label">Operations</div>
         <a href="inventory.html"><i class="fas fa-warehouse"></i> Inventory</a>
         <a href="analytics.html"><i class="fas fa-chart-bar"></i> Analytics</a>
         <a href="settings.html" class="active"><i class="fas fa-cog"></i> Settings</a>
-
         <a href="/admin/logout" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </nav>
 </aside>
@@ -87,117 +117,562 @@
     </div>
 </header>
 
-<main class="main-content">
+<main class="main-content" id="settings-app">
     <div class="page-header">
         <div>
-            <h1>Settings</h1>
-            <p>Configure your store preferences</p>
-        </div>
-        <button class="btn btn-primary btn-sm"><i class="fas fa-save"></i> Save Changes</button>
-    </div>
-
-    <div class="card">
-        <div class="card-header">
-            <h2>General Settings</h2>
-        </div>
-        <div class="card-body">
-            <form id="settings-form">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Store Name</label>
-                        <input type="text" class="form-control" value="LUNA BELLE">
-                    </div>
-                    <div class="form-group">
-                        <label>Store Email</label>
-                        <input type="email" class="form-control" value="hello@lunabelle.com">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Currency</label>
-                        <select class="form-control">
-                            <option>USD ($)</option>
-                            <option>EUR (€)</option>
-                            <option>GBP (£)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Time Zone</label>
-                        <select class="form-control">
-                            <option>UTC-8 (PST)</option>
-                            <option>UTC-5 (EST)</option>
-                            <option selected>UTC+0 (GMT)</option>
-                            <option>UTC+1 (CET)</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Store Description</label>
-                    <textarea class="form-control">Your destination for curated fashion and beauty essentials.</textarea>
-                </div>
-            </form>
+            <h1>Store Settings</h1>
+            <p>Configure your store identity, appearance, and preferences</p>
         </div>
     </div>
 
-    <div class="card">
-        <div class="card-header">
-            <h2>Shipping Settings</h2>
-        </div>
-        <div class="card-body">
-            <form>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Free Shipping Threshold</label>
-                        <input type="number" class="form-control" value="100" step="0.01">
-                    </div>
-                    <div class="form-group">
-                        <label>Standard Shipping Rate</label>
-                        <input type="number" class="form-control" value="9.99" step="0.01">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Express Shipping Rate</label>
-                        <input type="number" class="form-control" value="19.99" step="0.01">
-                    </div>
-                    <div class="form-group">
-                        <label>Estimated Delivery (days)</label>
-                        <input type="number" class="form-control" value="5">
-                    </div>
-                </div>
-            </form>
-        </div>
+    <div class="settings-tabs">
+        <button class="settings-tab active" data-tab="store"><i class="fas fa-store"></i> Store</button>
+        <button class="settings-tab" data-tab="appearance"><i class="fas fa-palette"></i> Appearance</button>
+        <button class="settings-tab" data-tab="social"><i class="fas fa-share-alt"></i> Social &amp; Contact</button>
+        <button class="settings-tab" data-tab="homepage"><i class="fas fa-home"></i> Homepage</button>
+        <button class="settings-tab" data-tab="seo"><i class="fas fa-search"></i> SEO &amp; System</button>
     </div>
 
-    <div class="card">
-        <div class="card-header">
-            <h2>Notifications</h2>
-        </div>
-        <div class="card-body">
-            <form>
-                <div style="display:flex;flex-direction:column;gap:12px;">
-                    <div style="display:flex;align-items:center;justify-content:space-between;">
-                        <div><strong style="font-size:0.85rem;">New Order Alerts</strong><p style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;">Receive notifications for new orders</p></div>
-                        <div style="position:relative;"><input type="checkbox" checked style="width:18px;height:18px;"></div>
+    <form id="settings-form">
+        <!-- ═══ STORE ═══ -->
+        <div class="tab-pane active" id="tab-store">
+            <div class="card settings-card">
+                <div class="card-header"><h2>Boutique</h2></div>
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Store Name</label>
+                            <input type="text" class="form-control" name="store_name" data-setting="store_name">
+                            <div class="field-hint">Displayed on the site header, browser tab, and admin</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Tagline</label>
+                            <input type="text" class="form-control" name="store_tagline" data-setting="store_tagline">
+                            <div class="field-hint">Short tagline shown under the logo</div>
+                        </div>
                     </div>
-                    <div style="display:flex;align-items:center;justify-content:space-between;">
-                        <div><strong style="font-size:0.85rem;">Low Stock Alerts</strong><p style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;">Get notified when stock is running low</p></div>
-                        <div><input type="checkbox" checked style="width:18px;height:18px;"></div>
+                    <div class="form-group">
+                        <label>Store Description</label>
+                        <textarea class="form-control" name="store_description" data-setting="store_description" rows="2"></textarea>
                     </div>
-                    <div style="display:flex;align-items:center;justify-content:space-between;">
-                        <div><strong style="font-size:0.85rem;">Customer Registration</strong><p style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;">Email when new customers sign up</p></div>
-                        <div><input type="checkbox" style="width:18px;height:18px;"></div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Atelier Address</label>
+                            <input type="text" class="form-control" name="atelier_address" data-setting="atelier_address">
+                        </div>
+                        <div class="form-group">
+                            <label>Opening Hours</label>
+                            <input type="text" class="form-control" name="opening_hours" data-setting="opening_hours">
+                        </div>
                     </div>
-                    <div style="display:flex;align-items:center;justify-content:space-between;">
-                        <div><strong style="font-size:0.85rem;">Weekly Reports</strong><p style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;">Receive weekly analytics summary</p></div>
-                        <div><input type="checkbox" checked style="width:18px;height:18px;"></div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Currency</label>
+                            <div class="currency-lock"><i class="fas fa-lock"></i> DZD (Algerian Dinar) — locked</div>
+                            <input type="hidden" name="currency" data-setting="currency" value="DZD">
+                        </div>
+                        <div class="form-group">
+                            <label>Timezone</label>
+                            <select class="form-control" name="timezone" data-setting="timezone">
+                                <option value="Africa/Algiers">Africa/Algiers (UTC+1)</option>
+                                <option value="Africa/Casablanca">Africa/Casablanca (UTC+0)</option>
+                                <option value="Africa/Tunis">Africa/Tunis (UTC+1)</option>
+                                <option value="Africa/Cairo">Africa/Cairo (UTC+2)</option>
+                                <option value="Europe/Paris">Europe/Paris (UTC+1)</option>
+                                <option value="UTC">UTC</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
-    </div>
+
+        <!-- ═══ APPEARANCE ═══ -->
+        <div class="tab-pane" id="tab-appearance">
+            <div class="card settings-card">
+                <div class="card-header"><h2>Images</h2></div>
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Header Logo</label>
+                            <div class="img-upload-wrapper">
+                                <img class="preview" id="logo_header_preview" src="" alt="Logo">
+                                <div class="upload-actions">
+                                    <label class="file-label" for="logo_header_file"><i class="fas fa-upload"></i> Choose image</label>
+                                    <span class="file-name" id="logo_header_name">No file selected</span>
+                                    <input type="file" id="logo_header_file" accept="image/jpeg,image/png,image/webp">
+                                    <button type="button" class="btn btn-outline btn-sm" id="logo_header_clear" style="display:none;">Remove</button>
+                                </div>
+                                <input type="hidden" name="logo_header" data-setting="logo_header" value="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Footer Logo</label>
+                            <div class="img-upload-wrapper">
+                                <img class="preview" id="logo_footer_preview" src="" alt="Logo">
+                                <div class="upload-actions">
+                                    <label class="file-label" for="logo_footer_file"><i class="fas fa-upload"></i> Choose image</label>
+                                    <span class="file-name" id="logo_footer_name">No file selected</span>
+                                    <input type="file" id="logo_footer_file" accept="image/jpeg,image/png,image/webp">
+                                    <button type="button" class="btn btn-outline btn-sm" id="logo_footer_clear" style="display:none;">Remove</button>
+                                </div>
+                                <input type="hidden" name="logo_footer" data-setting="logo_footer" value="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Favicon</label>
+                            <div class="img-upload-wrapper">
+                                <img class="preview preview-sm" id="favicon_preview" src="" alt="Favicon">
+                                <div class="upload-actions">
+                                    <label class="file-label" for="favicon_file"><i class="fas fa-upload"></i> Choose image</label>
+                                    <span class="file-name" id="favicon_name">No file selected</span>
+                                    <input type="file" id="favicon_file" accept="image/jpeg,image/png,image/webp">
+                                    <button type="button" class="btn btn-outline btn-sm" id="favicon_clear" style="display:none;">Remove</button>
+                                </div>
+                                <input type="hidden" name="favicon" data-setting="favicon" value="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>OG Image (social sharing)</label>
+                            <div class="img-upload-wrapper">
+                                <img class="preview" id="og_image_preview" src="" alt="OG">
+                                <div class="upload-actions">
+                                    <label class="file-label" for="og_image_file"><i class="fas fa-upload"></i> Choose image</label>
+                                    <span class="file-name" id="og_image_name">No file selected</span>
+                                    <input type="file" id="og_image_file" accept="image/jpeg,image/png,image/webp">
+                                    <button type="button" class="btn btn-outline btn-sm" id="og_image_clear" style="display:none;">Remove</button>
+                                </div>
+                                <input type="hidden" name="og_image" data-setting="og_image" value="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card settings-card">
+                <div class="card-header"><h2>Colors</h2></div>
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Primary Color (Gold)</label>
+                            <div class="color-input-row">
+                                <input type="color" name="primary_color" data-setting="primary_color">
+                                <input type="text" class="form-control" name="primary_color_text" data-setting="primary_color" placeholder="#c9a96e">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Primary Dark</label>
+                            <div class="color-input-row">
+                                <input type="color" name="primary_dark_text" data-setting="primary_dark">
+                                <input type="text" class="form-control" name="primary_dark" data-setting="primary_dark" placeholder="#b8944f">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Secondary Color (Dark)</label>
+                            <div class="color-input-row">
+                                <input type="color" name="secondary_color_text" data-setting="secondary_color">
+                                <input type="text" class="form-control" name="secondary_color" data-setting="secondary_color" placeholder="#1a1a2e">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Background Color</label>
+                            <div class="color-input-row">
+                                <input type="color" name="background_color_text" data-setting="background_color">
+                                <input type="text" class="form-control" name="background_color" data-setting="background_color" placeholder="#f5f6fa">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Cream / Warm Background</label>
+                            <div class="color-input-row">
+                                <input type="color" name="cream_color_text" data-setting="cream_color">
+                                <input type="text" class="form-control" name="cream_color" data-setting="cream_color" placeholder="#faf6f0">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Text Color</label>
+                            <div class="color-input-row">
+                                <input type="color" name="text_color_text" data-setting="text_color">
+                                <input type="text" class="form-control" name="text_color" data-setting="text_color" placeholder="#2d3748">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Secondary Text Color</label>
+                            <div class="color-input-row">
+                                <input type="color" name="text_light_color_text" data-setting="text_light_color">
+                                <input type="text" class="form-control" name="text_light_color" data-setting="text_light_color" placeholder="#718096">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Border Color</label>
+                            <div class="color-input-row">
+                                <input type="color" name="border_color_text" data-setting="border_color">
+                                <input type="text" class="form-control" name="border_color" data-setting="border_color" placeholder="#e2e8f0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card settings-card">
+                <div class="card-header"><h2>Fonts</h2></div>
+                <div class="card-body">
+                    <div class="font-select-row">
+                        <div class="form-group">
+                            <label>Headings</label>
+                            <select class="form-control" name="heading_font" data-setting="heading_font"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Body Text</label>
+                            <select class="form-control" name="body_font" data-setting="body_font"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Buttons</label>
+                            <select class="form-control" name="button_font" data-setting="button_font"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Navigation</label>
+                            <select class="form-control" name="nav_font" data-setting="nav_font"></select>
+                        </div>
+                    </div>
+                    <div class="field-hint" style="margin-top:8px;">Pre-approved luxury fonts: Cormorant Garamond, Playfair Display, DM Serif Display, Cinzel, Poppins, Inter</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ SOCIAL & CONTACT ═══ -->
+        <div class="tab-pane" id="tab-social">
+            <div class="card settings-card">
+                <div class="card-header"><h2>Social Media</h2></div>
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Instagram URL</label>
+                            <input type="url" class="form-control" name="instagram_url" data-setting="instagram_url" placeholder="https://www.instagram.com/adalina.boutique">
+                        </div>
+                        <div class="form-group">
+                            <label>Facebook URL</label>
+                            <input type="url" class="form-control" name="facebook_url" data-setting="facebook_url" placeholder="https://www.facebook.com/">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>TikTok URL</label>
+                            <input type="url" class="form-control" name="tiktok_url" data-setting="tiktok_url" placeholder="https://www.tiktok.com/@">
+                        </div>
+                        <div class="form-group">
+                            <label>Pinterest URL</label>
+                            <input type="url" class="form-control" name="pinterest_url" data-setting="pinterest_url" placeholder="https://www.pinterest.com/">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>WhatsApp Number</label>
+                            <input type="text" class="form-control" name="whatsapp_number" data-setting="whatsapp_number" placeholder="+213555123456">
+                            <div class="field-hint">With country code, no spaces</div>
+                        </div>
+                        <div class="form-group">
+                            <label>WhatsApp URL (custom)</label>
+                            <input type="url" class="form-control" name="whatsapp_url" data-setting="whatsapp_url" placeholder="https://wa.me/213555123456">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card settings-card">
+                <div class="card-header"><h2>Contact Information</h2></div>
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Contact Email</label>
+                            <input type="email" class="form-control" name="contact_email" data-setting="contact_email" placeholder="contact@adalina.dz">
+                        </div>
+                        <div class="form-group">
+                            <label>Contact Phone</label>
+                            <input type="text" class="form-control" name="contact_phone" data-setting="contact_phone" placeholder="+213 555 12 34 56">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Google Maps URL</label>
+                        <input type="url" class="form-control" name="google_maps_url" data-setting="google_maps_url" placeholder="https://maps.google.com/?q=...">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ HOMEPAGE ═══ -->
+        <div class="tab-pane" id="tab-homepage">
+            <div class="card settings-card">
+                <div class="card-header"><h2>Hero Section</h2></div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>Hero Image (Banner)</label>
+                        <div class="img-upload-wrapper">
+                            <img class="preview" id="hero_image_preview" src="" alt="Hero" style="width:120px;height:68px;">
+                            <div class="upload-actions">
+                                <label class="file-label" for="hero_image_file"><i class="fas fa-upload"></i> Choose image</label>
+                                <span class="file-name" id="hero_image_name">No file selected</span>
+                                <input type="file" id="hero_image_file" accept="image/jpeg,image/png,image/webp">
+                                <button type="button" class="btn btn-outline btn-sm" id="hero_image_clear" style="display:none;">Remove</button>
+                            </div>
+                            <input type="hidden" name="hero_image" data-setting="hero_image" value="">
+                        </div>
+                        <div class="field-hint">Recommended: 1920×800px, max 2MB. JPEG or WebP preferred.</div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Hero Slogan</label>
+                            <input type="text" class="form-control" name="hero_slogan" data-setting="hero_slogan" placeholder="Élégance et Raffinement">
+                        </div>
+                        <div class="form-group">
+                            <label>Hero Button Text</label>
+                            <input type="text" class="form-control" name="hero_button_text" data-setting="hero_button_text" placeholder="Explorer la Collection">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Hero Button Link</label>
+                        <input type="text" class="form-control" name="hero_button_link" data-setting="hero_button_link" placeholder="shop.html">
+                        <div class="field-hint">Relative page URL (e.g. shop.html) or full URL</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card settings-card">
+                <div class="card-header"><h2>Announcement Bar</h2></div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>Announcement Text</label>
+                        <input type="text" class="form-control" name="announcement_text" data-setting="announcement_text" placeholder="Livraison dans les 58 wilayas | Paiement à la livraison">
+                        <div class="field-hint">Leave empty to hide the announcement bar</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Scroll Speed (ms)</label>
+                        <input type="number" class="form-control" name="announcement_speed" data-setting="announcement_speed" placeholder="5000" min="1000" step="500">
+                        <div class="field-hint">Time in milliseconds between scrolls (lower = faster)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card settings-card">
+                <div class="card-header"><h2>Collections Section</h2></div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>Section Title</label>
+                        <input type="text" class="form-control" name="collection_title" data-setting="collection_title" placeholder="Nos Collections">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ SEO & SYSTEM ═══ -->
+        <div class="tab-pane" id="tab-seo">
+            <div class="card settings-card">
+                <div class="card-header"><h2>SEO</h2></div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>Site Title (Browser Tab)</label>
+                        <input type="text" class="form-control" name="site_title" data-setting="site_title" placeholder="ADALINA — Élégance et Raffinement">
+                        <div class="field-hint">Shown in the browser tab title</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Meta Description</label>
+                        <textarea class="form-control" name="meta_description" data-setting="meta_description" rows="3" placeholder="Mode féminine de luxe et parfums pour la femme moderne."></textarea>
+                        <div class="field-hint">Recommended: 120-160 characters for search engines</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Meta Keywords</label>
+                        <input type="text" class="form-control" name="meta_keywords" data-setting="meta_keywords" placeholder="mode, femme, luxe, parfums, algérie, boutique">
+                        <div class="field-hint">Comma-separated keywords</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card settings-card">
+                <div class="card-header"><h2>Delivery</h2></div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>Delivery Information Text</label>
+                        <input type="text" class="form-control" name="delivery_info" data-setting="delivery_info" placeholder="Livraison dans les 58 wilayas">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Free Shipping Threshold (DZD)</label>
+                            <input type="number" class="form-control" name="free_shipping_threshold" data-setting="free_shipping_threshold" placeholder="0" min="0" step="1">
+                            <div class="field-hint">0 = free shipping disabled</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Delivery Fee (DZD)</label>
+                            <input type="number" class="form-control" name="delivery_fee" data-setting="delivery_fee" placeholder="0" min="0" step="1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card settings-card">
+                <div class="card-header"><h2>System</h2></div>
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group" style="display:flex;flex-direction:column;gap:10px;">
+                            <div style="display:flex;align-items:center;justify-content:space-between;">
+                                <div><strong style="font-size:0.85rem;">Maintenance Mode</strong><p style="font-size:0.75rem;color:var(--text-muted);">Disable public access to the store</p></div>
+                                <label style="position:relative;display:inline-block;width:40px;height:22px;">
+                                    <input type="checkbox" name="maintenance_mode" data-setting="maintenance_mode" value="1" style="opacity:0;width:0;height:0;">
+                                    <span class="toggle-slider" style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#ccc;border-radius:22px;transition:0.3s;"></span>
+                                </label>
+                            </div>
+                            <div style="display:flex;align-items:center;justify-content:space-between;">
+                                <div><strong style="font-size:0.85rem;">Customer Registration</strong><p style="font-size:0.75rem;color:var(--text-muted);">Allow new customers to create accounts</p></div>
+                                <label style="position:relative;display:inline-block;width:40px;height:22px;">
+                                    <input type="checkbox" name="registration_enabled" data-setting="registration_enabled" value="1" style="opacity:0;width:0;height:0;">
+                                    <span class="toggle-slider" style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#ccc;border-radius:22px;transition:0.3s;"></span>
+                                </label>
+                            </div>
+                            <div style="display:flex;align-items:center;justify-content:space-between;">
+                                <div><strong style="font-size:0.85rem;">Guest Checkout</strong><p style="font-size:0.75rem;color:var(--text-muted);">Allow ordering without an account</p></div>
+                                <label style="position:relative;display:inline-block;width:40px;height:22px;">
+                                    <input type="checkbox" name="guest_checkout" data-setting="guest_checkout" value="1" style="opacity:0;width:0;height:0;">
+                                    <span class="toggle-slider" style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#ccc;border-radius:22px;transition:0.3s;"></span>
+                                </label>
+                            </div>
+                            <div style="display:flex;align-items:center;justify-content:space-between;">
+                                <div><strong style="font-size:0.85rem;">Order Notifications</strong><p style="font-size:0.75rem;color:var(--text-muted);">Enable admin order notifications</p></div>
+                                <label style="position:relative;display:inline-block;width:40px;height:22px;">
+                                    <input type="checkbox" name="order_notifications" data-setting="order_notifications" value="1" style="opacity:0;width:0;height:0;">
+                                    <span class="toggle-slider" style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#ccc;border-radius:22px;transition:0.3s;"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row" style="margin-top:12px;">
+                        <div class="form-group">
+                            <label>Default Language</label>
+                            <select class="form-control" name="default_language" data-setting="default_language">
+                                <option value="fr">Français</option>
+                                <option value="ar">العربية</option>
+                                <option value="en">English</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Timezone</label>
+                            <select class="form-control" name="timezone" data-setting="timezone">
+                                <option value="Africa/Algiers">Africa/Algiers (UTC+1)</option>
+                                <option value="Africa/Casablanca">Africa/Casablanca (UTC+0)</option>
+                                <option value="Africa/Tunis">Africa/Tunis (UTC+1)</option>
+                                <option value="Africa/Cairo">Africa/Cairo (UTC+2)</option>
+                                <option value="Europe/Paris">Europe/Paris (UTC+1)</option>
+                                <option value="UTC">UTC</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ SAVE BAR ═══ -->
+        <div class="save-bar">
+            <span class="save-msg hidden" id="saveMsg"></span>
+            <button type="submit" class="btn btn-primary" id="saveBtn"><i class="fas fa-save"></i> Save Changes</button>
+        </div>
+    </form>
 </main>
 
 <script src="js/admin.js"></script>
+<script>
+/* ── Tab switching ── */
+document.querySelectorAll('.settings-tab').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.settings-tab').forEach(function(b) { b.classList.remove('active'); });
+        document.querySelectorAll('.tab-pane').forEach(function(p) { p.classList.remove('active'); });
+        this.classList.add('active');
+        document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+    });
+});
+
+/* ── Color sync (color picker <-> text input) ── */
+document.querySelectorAll('.color-input-row input[type="color"]').forEach(function(picker) {
+    picker.addEventListener('input', function() {
+        var textInput = this.parentNode.querySelector('input[type="text"]');
+        if (textInput) textInput.value = this.value;
+    });
+});
+document.querySelectorAll('.color-input-row input[type="text"]').forEach(function(textInput) {
+    textInput.addEventListener('input', function() {
+        var picker = this.parentNode.querySelector('input[type="color"]');
+        if (picker && /^#[0-9a-f]{6}$/i.test(this.value)) picker.value = this.value;
+    });
+});
+
+/* ── Image upload handler ── */
+var UPLOADING = {};
+['logo_header', 'logo_footer', 'favicon', 'og_image', 'hero_image'].forEach(function(key) {
+    var fileInput = document.getElementById(key + '_file');
+    var preview = document.getElementById(key + '_preview');
+    var nameEl = document.getElementById(key + '_name');
+    var hidden = document.querySelector('input[name="' + key + '"]');
+    var clearBtn = document.getElementById(key + '_clear');
+
+    if (fileInput) {
+        fileInput.addEventListener('change', function() {
+            var file = this.files[0];
+            if (!file) return;
+            if (file.size > 2 * 1024 * 1024) {
+                showSaveMsg('Image too large. Maximum 2MB.', 'error');
+                this.value = '';
+                return;
+            }
+            if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+                showSaveMsg('Invalid format. Use JPEG, PNG or WebP.', 'error');
+                this.value = '';
+                return;
+            }
+            nameEl.textContent = 'Uploading...';
+            var fd = new FormData();
+            fd.append('files', file);
+            fd.append('type', 'settings');
+            fetch('/api/upload', { method: 'POST', body: fd })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (data.paths && data.paths.length > 0) {
+                        var path = data.paths[0];
+                        var src = '/' + path;
+                        preview.src = src;
+                        preview.style.display = 'block';
+                        hidden.value = path;
+                        nameEl.textContent = file.name;
+                        if (clearBtn) clearBtn.style.display = 'inline-block';
+                        showSaveMsg('Image uploaded successfully', 'success');
+                    }
+                })
+                .catch(function() { showSaveMsg('Upload failed', 'error'); nameEl.textContent = 'Upload failed'; });
+        });
+    }
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+            preview.src = '';
+            preview.style.display = 'none';
+            hidden.value = '';
+            nameEl.textContent = 'No file selected';
+            clearBtn.style.display = 'none';
+            if (fileInput) fileInput.value = '';
+        });
+    }
+});
+
+function showSaveMsg(text, type) {
+    var el = document.getElementById('saveMsg');
+    if (!el) return;
+    el.textContent = text;
+    el.className = 'save-msg' + (type === 'error' ? ' error' : '');
+    el.classList.remove('hidden');
+    if (type !== 'error') setTimeout(function() { el.classList.add('hidden'); }, 4000);
+}
+</script>
 </body>
 </html>

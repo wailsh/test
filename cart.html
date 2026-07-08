@@ -77,6 +77,7 @@
                     <ul class="nav-list">
                         <li class="nav-item"><a href="index.html" class="nav-link active">HOME</a></li>
                         <li class="nav-item"><a href="shop.html" class="nav-link">SHOP</a></li>
+                        
                     </ul>
                 </nav>
                 <span class="header-nav-location">ATELIER ADALINA • CHLEF</span>
@@ -93,11 +94,11 @@
                     <div class="cart-items" id="cart-page-items">
                         <div class="cart-item">
                             <div class="cart-item-image">
-                                <img src="images/products/product-1.jpg" alt="Product">
+                                <img src="https://placehold.co/400x533/e2e8f0/718096?text=Produit" alt="Product">
                             </div>
                             <div class="cart-item-details">
                                 <h3 class="cart-item-title">Elegant Evening Gown</h3>
-                                <p class="cart-item-price">$299.00</p>
+                                <p class="cart-item-price">29 900 DA</p>
                                 <div class="cart-item-quantity">
                                     <button class="quantity-btn" onclick="decreaseQty(1)">-</button>
                                     <input type="text" class="quantity-input" id="qty-1" value="1" onchange="updateCartItem(1)">
@@ -109,11 +110,11 @@
                         
                         <div class="cart-item">
                             <div class="cart-item-image">
-                                <img src="images/products/product-2.jpg" alt="Product">
+                                <img src="https://placehold.co/400x533/e2e8f0/718096?text=Produit" alt="Product">
                             </div>
                             <div class="cart-item-details">
                                 <h3 class="cart-item-title">Rose Gold Perfume</h3>
-                                <p class="cart-item-price">$149.00</p>
+                                <p class="cart-item-price">14 900 DA</p>
                                 <div class="cart-item-quantity">
                                     <button class="quantity-btn" onclick="decreaseQty(2)">-</button>
                                     <input type="text" class="quantity-input" id="qty-2" value="2" onchange="updateCartItem(2)">
@@ -128,7 +129,7 @@
                         <h3>Récapitulatif de la commande</h3>
                         <div class="summary-item">
                             <span>Sous-total</span>
-                            <span id="cart-subtotal">$597.00</span>
+                            <span id="cart-subtotal">59 700 DA</span>
                         </div>
                         <div class="summary-item">
                             <span>Livraison</span>
@@ -136,11 +137,11 @@
                         </div>
                         <div class="summary-item">
                             <span>TVA</span>
-                            <span id="cart-tax">$47.76</span>
+                            <span id="cart-tax">4 776 DA</span>
                         </div>
                         <div class="summary-item total">
                             <span>Total</span>
-                            <span id="cart-total">644,76 $</span>
+                            <span id="cart-total">64 476 DA</span>
                         </div>
                         
                         <button class="checkout-btn" onclick="proceedToCheckout()">Procéder au paiement</button>
@@ -163,7 +164,7 @@
             <div class="sidebar-footer">
                 <div class="cart-total">
                     <span>Total :</span>
-                    <span id="cart-total-price">$0.00</span>
+                    <span id="cart-total-price">0 DA</span>
                 </div>
                 <button class="btn btn-primary" onclick="toggleCart(); window.location.href='checkout.html'">Commander</button>
                 <p class="continue-shopping" onclick="toggleCart()">Continuer mes achats</p>
@@ -232,6 +233,59 @@
                 </div>
             </div>
         </footer>
+    </div>
+
+    <div id="quick-view-modal" class="modal">
+        <div class="modal-content quick-view-content">
+            <span class="close-modal" onclick="closeQuickView()">&times;</span>
+            <div class="quick-view-body">
+                <div class="quick-view-images">
+                    <div class="quick-view-main-wrap">
+                        <img id="quick-view-main-image" src="" alt="Product">
+                        <button class="qv-nav qv-prev" onclick="qvPrevImage()">&#10094;</button>
+                        <button class="qv-nav qv-next" onclick="qvNextImage()">&#10095;</button>
+                    </div>
+                    <div class="quick-view-thumbs" id="quick-view-thumbs"></div>
+                </div>
+                <div class="quick-view-info">
+                    <h2 id="quick-view-title"></h2>
+                    <div class="qv-price" id="quick-view-price"></div>
+
+                    <div class="qv-section">
+                        <label>Taille</label>
+                        <div class="qv-size-options" id="qv-sizes"></div>
+                    </div>
+
+                    <div class="qv-section">
+                        <label>Couleur</label>
+                        <div class="qv-color-options" id="qv-colors"></div>
+                    </div>
+
+                    <div class="qv-section">
+                        <label>Quantité</label>
+                        <div class="qv-qty">
+                            <button class="qv-qty-btn" onclick="qvChangeQty(-1)">−</button>
+                            <input type="text" id="qv-qty-input" value="1" readonly>
+                            <button class="qv-qty-btn" onclick="qvChangeQty(1)">+</button>
+                        </div>
+                    </div>
+
+                    <div class="qv-section" id="qv-stock-info"></div>
+
+                    <button class="qv-btn qv-btn-primary" onclick="qvAddToCart()">Ajouter au panier</button>
+                    <button class="qv-btn qv-btn-dark" id="qv-buy-now" onclick="qvBuyNow()">Acheter maintenant</button>
+
+                    <button class="qv-btn qv-btn-outline" onclick="qvToggleWishlist()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                        <span id="qv-wishlist-text">Ajouter aux favoris</span>
+                    </button>
+
+                    <button class="qv-continue" onclick="closeQuickView()">Continuer les achats</button>
+                </div>
+            </div>
+        </div>
     </div>
     
     <script src="js/script.js"></script>

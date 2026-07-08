@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Orders - LUNA BELLE Admin</title>
+    <title>Orders - ADALINA Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="css/admin.css">
     <script>
@@ -43,8 +43,8 @@
 
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-        <img src="../images/logo.svg" alt="LUNA BELLE" style="width:32px;height:32px">
-        <h2>LUNA <span>BELLE</span></h2>
+        <img src="../images/logo.svg" alt="ADALINA" style="width:32px;height:32px">
+        <h2>ADALINA</h2>
     </div>
     <nav class="sidebar-nav">
         <div class="nav-label">Main</div>
@@ -139,7 +139,7 @@
         <div class="modal-body">
             <input type="hidden" id="om-order-id">
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+            <div class="order-detail-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
                 <!-- Customer Information -->
                 <div class="card" style="box-shadow:none;border:1px solid var(--border);margin:0;">
                     <div class="card-header"><h2>Customer</h2></div>
@@ -194,11 +194,11 @@
 
             <!-- Total -->
             <div style="text-align:right;font-size:1.2rem;font-weight:700;padding:12px 0;border-top:2px solid var(--border);margin-bottom:20px;">
-                Total: <span id="om-total">$0.00</span>
+                Total: <span id="om-total">0 DA</span>
             </div>
 
             <!-- Status Change -->
-            <div class="card" style="box-shadow:none;border:1px solid var(--border);margin:0;">
+            <div class="card no-print" style="box-shadow:none;border:1px solid var(--border);margin:0;">
                 <div class="card-header"><h2>Update Status</h2></div>
                 <div class="card-body">
                     <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
@@ -211,6 +211,7 @@
                             <option value="cancelled">Cancelled</option>
                         </select>
                         <button class="btn btn-primary" id="om-save-status"><i class="fas fa-save"></i> Save Status</button>
+                        <button class="btn btn-outline" onclick="printOrder()"><i class="fas fa-print"></i> Imprimer la facture</button>
                     </div>
                     <p id="om-status-msg" style="font-size:0.8rem;margin-top:6px;color:var(--success);display:none;"></p>
                 </div>
